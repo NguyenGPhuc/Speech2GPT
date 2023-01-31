@@ -1,14 +1,27 @@
 import speech_recognition as sr
 
+# Read API key form text file.
+with open("api_key.txt", "r") as f:
+    contents= f.readlines()
+
+try: 
+    print(contents)
+
+except:
+    print("Can't read api key from file.")
+
+finally:
+    f.close()
+
 # Initialize recognizer class (for recognizing the speech)
 r = sr.Recognizer()
 
 # Reading Microphone as source
 # listening the speech and store in audio_text variable
 with sr.Microphone() as source:
-    print("Say or ask something")
+    print("Recording started")
     audio = r.listen(source)
-    print("Speech period ended")
+    print("Recording ended")
     
 # recoginize_() method will throw a request error if the API is unreachable, hence using exception handling
 try:
