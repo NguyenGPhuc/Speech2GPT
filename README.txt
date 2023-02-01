@@ -1,0 +1,1 @@
+This program uses Python's voice recognition library to convert user speech into plain text. The generated text is then used as the prompt for OpenAI's ChatGPT. Response can be in plain text, voiced, or both. Question and response(s) will be logged in chat.txt file.
