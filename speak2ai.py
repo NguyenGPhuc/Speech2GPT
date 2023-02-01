@@ -1,5 +1,7 @@
 import speech_recognition as sr
 import openai
+from text2speech_config import voice_engine
+
 
 # Read API key form text file.
 ### Require your own openai api key ### Create a text file call "api_key.txt" in the same directory. Copy and paste your API key in there and save it.
@@ -43,27 +45,65 @@ def generate_response(prompt):
     message = completions.choices[0].text
     return message
 
+# uses text to speech libary to read the reponse
+def speech_response(gpt_response):
+    voice_engine.say(gpt_response)
+    voice_engine.runAndWait()
 
-# Initialize recognizer class (for recognizing the speech)
-r = sr.Recognizer()
-
-#
-while True:
-    # Reading Microphone as source
+# creates plain text using user speech
+def speech_to_text():
+     # Reading Microphone as source
     # listening the speech and store in audio_text variable
     with sr.Microphone() as source:
-        print("Recording started")
+        print("Listening...")
         audio = r.listen(source)
         print("Recording ended\n")
     try:
         # using google speech recognition to translate into text
         # print("Working!")
-        text = r.recognize_google(audio)
+        convert_text = r.recognize_google(audio)
+    except:
+        convert_text = "Sorry, I did not get that"
+    finally:
+        return convert_text
+
+# Initialize recognizer class (for recognizing the speech)
+r = sr.Recognizer()
+
+# Ask user if they want Text to speech option. 
+voice_question = "Do you want the response read out loud? (yes or no)"
+print(voice_question)
+speech_response(voice_question)
+if (speech_to_text() == "no"):
+    voice_option = 0
+else:
+    voice_option = 1
+
+# program will continuously ask user for a prompt
+while True:
+        text = speech_to_text()
+        print(text)
         if text == 'close chat':
             break
+
+        # enable voiced option while program is running
+        elif text == 'voice option on':
+            voice_on = "Voice option is now on"
+            print(voice_on)
+            speech_response(voice_on)
+            voice_option = 1
+        elif text == 'voice option off':
+            if (voice_option != 0):
+                voice_off = "Voice option is now off"
+                print(voice_off)
+                # speech_response(voice_off)
+                voice_option = 0
         else:
             print("Promt:" + text)
             response = generate_response(text)
-            print(f"Response: {response}\n")        
-    except:
-        print("Sorry, I did not get that")
+
+            print(f"Response: {response}\n")
+
+            # text to speech will read the response if enabled
+            if (voice_option == 1):
+                speech_response(response)        
