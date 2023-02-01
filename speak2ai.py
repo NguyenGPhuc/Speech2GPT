@@ -19,7 +19,8 @@ finally:
 try:
     # Try to generate a response using the GPT-3 model
     response = openai.Completion.create(
-        engine="text-davinci-002",
+        # engine="text-davinci-002",
+        engine="text-ada-001",
         prompt="Hello, world!",
         max_tokens=1024,
         n=1,
@@ -33,12 +34,13 @@ except openai.OpenAIError as error:
 # uses generate text as the generated prompt for ChatGPT
 def generate_response(prompt):
     completions = openai.Completion.create(
-        engine="text-davinci-002",
+        # engine="text-davinci-002",
+        engine="text-ada-001",
         prompt=prompt,
-        max_tokens=1024,
+        max_tokens=512,
         n=1,
         stop=None,
-        temperature=0.7,
+        temperature=0.5,
     )
 
     # return ChatGPT's response
@@ -67,42 +69,73 @@ def speech_to_text():
     finally:
         return convert_text
 
+
 # Initialize recognizer class (for recognizing the speech)
 r = sr.Recognizer()
 
-# Ask user if they want Text to speech option. 
-voice_question = "Do you want the response read out loud? (yes or no)"
-print(voice_question)
-speech_response(voice_question)
-if (speech_to_text() == "no"):
-    voice_option = 0
+# # Ask user if they want Text to speech option. 
+# voice_question = "Do you want the response read out loud? (yes or no)"
+# print(voice_question)
+voice_option = 0
+# speech_response(voice_question)
+# if (speech_to_text() == "no"):
+#     voice_option = 0
+# else:
+#     voice_option = 1
+
+# Ask user if they want to create an output file
+log_option = input("Do you want to record the prompt and response? (Y/N)")
+if log_option.lower() == 'y' or log_option.lower() == "yes":
+    log = 1
 else:
-    voice_option = 1
+    log = 0
+    
 
 # program will continuously ask user for a prompt
 while True:
-        text = speech_to_text()
-        print(text)
-        if text == 'close chat':
+        # reading from speech-to-text
+        # text = speech_to_text()
+
+        # reading from user keyboard input
+        text = input('Write a prompt\n')
+        
+        # write prompt to file if log option is enabled.
+        print("Prompt: " + text)
+        if log == 1:
+            f = open("temp.txt", 'w')
+            f.write("Prompt: " + text)
+            f.close()
+
+        # program will close upon hearing "close chat" or "end chat"
+        if text == 'close chat' or text == 'end chat':
             break
 
-        # enable voiced option while program is running
+        # enable voiced option while program is running by saying "voice option ON"
         elif text == 'voice option on':
-            voice_on = "Voice option is now on"
-            print(voice_on)
-            speech_response(voice_on)
-            voice_option = 1
+            if voice_option != 1:
+                voice_on = "Voice option is now on"
+                print(voice_on)
+                speech_response(voice_on)
+                voice_option = 1
+        # diable voiced option while program is running by saying "voice option OFF"
         elif text == 'voice option off':
-            if (voice_option != 0):
+            if voice_option != 0:
                 voice_off = "Voice option is now off"
                 print(voice_off)
                 # speech_response(voice_off)
                 voice_option = 0
         else:
-            print("Promt:" + text)
-            response = generate_response(text)
+            # checks to see if speech was successfully converted to text
+            print(text)
+            if text != "Sorry, I did not get that":
+                response = generate_response(text)
+            else:
+                print(text) 
 
             print(f"Response: {response}\n")
+
+            print("Do you want to record this response? (Y/N)")
+            
 
             # text to speech will read the response if enabled
             if (voice_option == 1):
