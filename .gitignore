@@ -1,1 +1,4 @@
 api_key.txt
+__pycache__
+log_record.txt
+temp.txt

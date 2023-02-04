@@ -20,7 +20,7 @@ voices = voice_engine.getProperty('voices')       #getting details of current vo
 voice_engine.setProperty('voice', voices[1].id)   #changing index, changes voices. 1 for female
 
 
-"""Saving Voice to a file"""
-# On linux make sure that 'espeak' and 'ffmpeg' are installed
-# voice_engine.save_to_file('Hello World', 'test.mp3')
-# voice_engine.runAndWait()
+# uses text to speech libary to read the reponse
+def speech_response(gpt_response):
+    voice_engine.say(gpt_response)
+    voice_engine.runAndWait()
