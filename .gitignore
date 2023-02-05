@@ -1,4 +1,6 @@
 api_key.txt
-__pycache__
+elven_api_key.txt
 log_record.txt
 temp.txt
+/output
+/__pycache__

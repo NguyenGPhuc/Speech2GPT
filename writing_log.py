@@ -1,15 +1,9 @@
 # create a log of the conversation
-def write_log(text, log):
+def write_log(temp):
     # keep a temporary file for easy access and editing current passage
-    f_temp = open("temp.txt", 'w')
-    f_temp.write(text)
+    f_temp = open("output/temp.txt", 'w')
+    f_temp.write(temp)
     f_temp.close()
-
-    # add tempory passage into the story.
-    if log == 1:
-        with open("temp.txt", 'r') as firstFile, open('record.txt', 'a') as secondFile:
-            for line in firstFile:
-                secondFile.write(line)
 
 # read from record file
 def read_log(which_log):
