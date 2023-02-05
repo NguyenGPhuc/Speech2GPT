@@ -37,3 +37,20 @@ def check_log(text, log):
             log = 0
 
     return log
+
+# funtion that handle all user commands
+def command_line(text):
+    # command for closing chat.
+    if text == 'close chat' or text == 'end chat':
+        command = 'terminate'
+        return command
+    # command for asking ai option
+    elif text == 'ask ai' or text == 'ask chat':
+        command = 'ask ai'
+        return 'ask ai'
+    # command for closing ai option
+    elif text == 'close ai' or text == 'quit ai':
+        command = 'close ai'
+        return command
+    else:
+        command = "Sorry, I did not get that"

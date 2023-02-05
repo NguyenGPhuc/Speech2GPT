@@ -1,3 +1,4 @@
+import os
 import openai
 
 # Read API key form text file.
@@ -6,8 +7,8 @@ with open("api_key.txt", "r") as f:
     contents = f.readline().strip()
 try:
     # Althernatively, reaplce variable "contents" below with the API key. Exmaple - "123......xyz"
-    openai.api_key = contents
-    # openai.api_key = os.getenv(contents)
+    # openai.api_key = contents
+    openai.api_key = os.getenv(contents)
 except:
     print("Can't read api key from file.")
 finally:
@@ -18,7 +19,7 @@ def generate_response(prompt):
     try:
         completions = openai.Completion.create(
             # engine="text-davinci-002",
-            engine="text-ada-001",
+            engine="text-davinci-003",
             prompt=prompt,
             max_tokens=512,
             n=1,
@@ -33,3 +34,23 @@ def generate_response(prompt):
     # return ChatGPT's response
     message = completions.choices[0].text
     return message
+
+# grammar correction
+def check_grammar(promt):
+    try:
+        completions = openai.Completion.create(
+            model="text-davinci-003",
+            prompt="Correct this if it has any grammar issues, else leave it the same\n\n" + promt,
+            temperature=0,
+            max_tokens=60,
+            top_p=1.0,
+            frequency_penalty=0.0,
+            presence_penalty=0.0
+        )
+
+        return completions
+    except openai.OpenAIError as error:
+        print(f"API key is invalid. Error: {error}")
+    
+    
+        

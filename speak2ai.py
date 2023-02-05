@@ -1,69 +1,70 @@
-# import speech_recognition as sr
-# import openai
-import os
 from text2speech import *
 from openai_service import *
 from speech2text import *
 from writing_log import *
 from command_option import *
 
+
+current_paragraph = ''
+current_page = ''
+current_book = ''
+
+paragraph_num = 1
+page_num = 1
+book_num = 1
+
 # program will continuously ask user for a prompt
 while True:
         # reading from speech-to-text
         # text_speech = speech_to_text()
-        # text = speech_to_text()
+        print('Main Menu')
+        print('Say...')
+        print('"writing mode" to start wrting by verbally tells your story.\n')
+        print('"ask ai" interact with an AI that will generate response base on user given prompt.\n')
+        print('"modify paragraph" to make edit to current paragraph. This can be grammar check, theme change or so on\n')
+        print('"modify page" to make changes to the current page. This can be grammar check, theme change or so on\n')
+        print('"read book" to display the currently book in its finish form.\n')
+        command = speech_to_text()
 
         # reading from user keyboard input
         # text_input = input('Write or say a promt\n')
-        ask = input('Write or say a promt\n')
-        text = ''
-
-        # write_log(text, log)
+        # command = input('Start writing or say a command\n')
+        current_passage = ''
 
         # program will close upon hearing "close chat" or "end chat"
-        if ask == 'close chat' or ask == 'end chat':
+        if command_line(command) == 'terminate':
             break
+
 
         else:
             # checks to see if speech was successfully converted to text
-            if ask != "Sorry, I did not get that":        
+            if command != "Sorry, I did not get that":        
                 # if user want to ask openAI to do something instead of writing.
-                if (ask == 'ask ai' or ask == 'ask chat'):
-                    text = input('Ask promt or tpye a command: ')
-                    voice_option = check_voice(text, voice_option)
-                    log_status = check_log(text, log_status)
+                if command_line(command) == 'ask ai':
+                    while True:
+                        print('Ask AI anything ヽ(ヅ)ノ')
+                        command = speech_to_text()
 
-                    # program will close upon hearing "close chat" or "end chat"
-                    if text == 'close chat' or text == 'end chat':
-                        break
-
-                    response = generate_response(text)
-                    print(f"Response: {response}\n")
-                    # only temperory log will be kept and will be deleted after each response.
-                    # permanent log will be recorded if option is enabled.
-                    write_log(response, log_status)
-
-                # if user want to check current sentence or paragrph's grammar
-                elif (text == 'check grammar' or text == 'check pargraph'):
-                    voice_option = check_voice(text, voice_option)
-                    log_status = check_log(text, log_status)
-
-                    read_log()
+                        # program will close upon hearing "close chat" or "end chat"
+                        if command_line(command) == 'close ai':
+                            break
+                        
+                        response = generate_response(command)
+                        print(f"Response: {response}\n\n")
+                        
+                        print("Would you like to overwrite what you've written with AI generated response?")
+                        # overwrite user passage with AI generated resonse.
+                        if speech_to_text() == 'yes':
+                            write_log(response)
 
                 # simply record speech to text log.
                 else:
+                    current_passage = command + '. '
+                    current_paragraph = '. ' + current_passage
+                    print('Currently have: ' + current_paragraph)
 
-                    voice_option = check_voice(text, voice_option)
-                    log_status = check_log(text, log_status)
 
-                    # write_log(speech_to_text(), log_status)
-                    write_log(text, log_status)
+                    
             else:
-                print(text) 
+                print("Sorry, I did not get that") 
 
-                # print(f"Response: {response}\n")
-
-
-            # text to speech will read the response if enabled
-            if (voice_option == 1):
-                speech_response(response)
