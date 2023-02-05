@@ -44,6 +44,7 @@ def command_line(text):
     if text == 'close chat' or text == 'end chat':
         command = 'terminate'
         return command
+    
     # command for asking ai option
     elif text == 'ask ai' or text == 'ask chat':
         command = 'ask ai'
@@ -52,5 +53,11 @@ def command_line(text):
     elif text == 'close ai' or text == 'quit ai':
         command = 'close ai'
         return command
+    
+    # command to open writing mode
+    elif text == 'writing mode' or text == 'write mode':
+        command = 'writing mode'
+        return command
+
     else:
         command = "Sorry, I did not get that"
