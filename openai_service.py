@@ -15,8 +15,19 @@ finally:
     f.close()
 
 # uses generate text as the generated prompt for ChatGPT
-def generate_response(prompt):
+def generate_response(author, theme, text):
     try:
+        # AI generate reponse base on user specification
+        if author != 'None' and theme != 'None':
+            prompt = "Rewrite this passage in a similar style to " + author + "in a " + theme + " theme :" + text
+        elif author == 'None' and theme != 'None':
+            prompt = "Rewrite this passge in a " + theme + " theme: " + text
+        elif author != 'None' and theme == 'None':
+            prompt = "Rewrite this passage in a similar style to author " + author + ": " + text
+        # if no specification selected, AI will just fix grammar
+        else: 
+            prompt="Correct this if it has any grammar issues, else leave it the same\n\n" + text,
+        
         completions = openai.Completion.create(
             # engine="text-davinci-002",
             engine="text-davinci-003",
@@ -35,22 +46,5 @@ def generate_response(prompt):
     message = completions.choices[0].text
     return message
 
-# grammar correction
-def check_grammar(promt):
-    try:
-        completions = openai.Completion.create(
-            model="text-davinci-003",
-            prompt="Correct this if it has any grammar issues, else leave it the same\n\n" + promt,
-            temperature=0,
-            max_tokens=60,
-            top_p=1.0,
-            frequency_penalty=0.0,
-            presence_penalty=0.0
-        )
-
-        return completions
-    except openai.OpenAIError as error:
-        print(f"API key is invalid. Error: {error}")
-    
     
         

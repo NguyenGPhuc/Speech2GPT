@@ -8,7 +8,6 @@ from tkinter.filedialog import askopenfilename
 from PIL import Image, ImageTk
 
 
-
 current_paragraph = ''
 current_page = ''
 current_book = ''
@@ -17,40 +16,82 @@ paragraph_num = 1
 page_num = 1
 book_num = 1
 
-# Python handle dropdown menu
-def drop_down():
-    selected_option = dropdown_var.get()
-    print(f"Button clicked. Selected option: {selected_option}.")
+# drop down menu for authors
+def update_dropdown():
+    global chosen_author
+    selected_author = author_var.get()
+    if selected_author == "None":
+        chosen_author = "no"
+    else:
+        chosen_author = selected_author
+
+    global chosen_theme
+    selected_theme = theme_var.get()
+    if selected_theme == "None":
+        chosen_theme = "no"
+    else:
+        chosen_theme =  selected_theme
+    
+
+    label.config(text="You have chosen [ " + chosen_author + " ] style with [ " + chosen_theme + " ] theme.")
+    print(f"Selected author: {selected_author}.")
+    print(f"Selected theme: {selected_theme}.")
+
+
+    
+
+# rewrite input using selected author's style
+    response = generate_response(user_input)
+                    
+    text_box.delete("1.0", "end")
+    text_box.insert("1.0", response)
+
 
 # record user input
 def save_input():
     global user_input
     user_input = text_box.get("1.0", "end")
 
+# window setting
 window = tk.Tk()
 window.title("Story Squire")
-window.geometry("680x900")
+window.geometry("600x600")
 
 
-# Create drop down menu
-options = ["Option 1", "Option 2", "Option 3"]
-dropdown_var = tk.StringVar()
-dropdown_var.set(options[0])
-dropdown = tk.OptionMenu(window, dropdown_var, *options)
-dropdown.pack()
+# Create drop down menu for authors
+author_options = ["None", "Edgar Allan Poe", "Hidetaka Miyazaki", "Stephen King", "H.P. Lovecraft", "George R. R. Martin", "J. R. R. Tolkien"]
+author_var = tk.StringVar()
+author_var.set("None")
+author_dropdown = tk.OptionMenu(window, author_var, *author_options)
+author_dropdown.pack()
+
+# create drop down menu for themes
+theme_options = ["None", "Fantasy", "Science Fiction", "Cthulhu Mythos", "Dark Fantasy", "Bleak", "Coming of age", "Dreams and reality", "The Supernatural"]
+theme_var = tk.StringVar()
+theme_var.set("None")
+theme_dropdown = tk.OptionMenu(window, theme_var, *theme_options)
+theme_dropdown.pack()
 
 # Create text box where user write their story
-text_box = tk.Text(window, width=20, height=40, font="Time 12")
+text_box = tk.Text(window, width=60, height=20, font="Time 12")
 text_box.pack()
 
 # Create button
 button = tk.Button(window, text="Save", command=save_input)
 button.pack()
 
+# Create an update button
+update_button = tk.Button(window, text="Update", command=update_dropdown)
+update_button.pack()
+
+# Create a label to display the selected option
+label = tk.Label(window, text="")
+label.pack()
+
 window.mainloop()
 
 print(f"User input: {user_input}")
-
+# print(f"User author: {chosen_option}")
 
 # # program will continuously ask user for a prompt
 # while True:
