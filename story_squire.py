@@ -1,8 +1,9 @@
+import tkinter as tk
+import re
 from openai_service import *
 from speech2text import *
 from writing_log import *
 from command_option import *
-import tkinter as tk
 from tkinter import Label
 from tkinter.filedialog import askopenfilename
 from PIL import Image, ImageTk
@@ -105,6 +106,7 @@ def save_page():
         with open(file_path, "a") as file:
             file.write("Paragraph (" + str(paragraph_num) + ")" + "\n" + user_input + "\n\n")
             paragraph_num += 1
+
     # new page will be created when 5 paragraph limit is reach.
     else:
         paragraph_num = 1
@@ -124,6 +126,31 @@ def load_input():
 
     text_box.delete("1.0", "end")
     text_box.insert("1.0", saved_input)
+
+# load passage with user given paragraph and page number
+def load_page():
+    global paragraph_num
+    global page_num
+    global file_name
+
+    load_window = tk.Toplevel(window)
+    load_window.title("Load Window")
+
+    label1 = tk.Label(load_window, text="Enter page number:")
+    label1.grid(row=0, column=0)
+    entry1 = tk.Entry(load_window)
+    entry1.grid(row=0, column=1)
+
+    label2 = tk.Label(load_window, text="Enter paragraph number:")
+    label2.grid(row=1, column=0)
+    entry2 = tk.Entry(load_window)
+    entry2.grid(row=1, column=1)
+
+    # create an output directory of 
+    global output_diectory
+    if not os.path.exists(output_diectory):
+        print("No saved files")
+
 
 # window setting
 window = tk.Tk()
@@ -168,23 +195,32 @@ frame3.pack(pady=20)
 text_box = tk.Text(frame3, width=80, height=20, font="Time 12")
 text_box.pack(side="left")
 
-
+# from for save and load current passage
+frame4 = tk.Frame(window)
+frame4.pack(pady=20)
 
 # Create save button
-save_button = tk.Button(window, text="Save", command=save_input)
-save_button.pack()
+save_button = tk.Button(frame4, text="Save", command=save_input)
+save_button.pack(side="left")
 
 # create load button
-load_button = tk.Button(window, text="Load", command=load_input)
-load_button.pack()
+load_button = tk.Button(frame4, text="Load", command=load_input)
+load_button.pack(side="left")
+
+frame5 = tk.Frame(window)
+frame5.pack(pady=20)
+
+# create a save to file button
+save_to_page = tk.Button(frame5, text="Save to page", command=save_page)
+save_to_page.pack(side="left")
+
+# create a load from file button
+load_from_page = tk.Button(frame5, text="Load from page", command=load_page)
+load_from_page.pack(side="left")
 
 # Create an update button
 update_button = tk.Button(window, text="Generate", command=generate_passage)
 update_button.pack()
-
-# create load button
-save_to_page = tk.Button(window, text="Save to page", command=save_page)
-save_to_page.pack(side="left")
 
 # Create a label to display the selected option
 label = tk.Label(window, text="")
