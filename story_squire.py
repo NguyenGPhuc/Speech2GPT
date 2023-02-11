@@ -7,20 +7,26 @@ from tkinter import Label
 from tkinter.filedialog import askopenfilename
 from PIL import Image, ImageTk
 
+chosen_theme = ''
+chosen_theme = ''
 
-current_paragraph = ''
-current_page = ''
-current_book = ''
-
+# keep track of current page and paragraph
 paragraph_num = 1
 page_num = 1
 book_num = 1
 
+# keep track of current passage and saved passage
 user_input = ''
 saved_input = ''
 
+# create output directory
+output_diectory = "output"
+file_name = ''
+current_path = os.path
+
+# generate passage using current passage.
+def generate_passage():
 # drop down menu for authors
-def update_dropdown():
     global chosen_author
     selected_author = author_var.get()
     if selected_author == "None":
@@ -28,6 +34,7 @@ def update_dropdown():
     else:
         chosen_author = selected_author
 
+    # drop down menu for authors theme
     global chosen_theme
     selected_theme = theme_var.get()
     if selected_theme == "None":
@@ -35,6 +42,7 @@ def update_dropdown():
     else:
         chosen_theme =  selected_theme
 
+    # use current passage as prompt
     global user_input
     if user_input == 'No passage was previously saved':
         user_input = ''
@@ -56,6 +64,8 @@ def update_dropdown():
     print(f"Selected theme: {selected_theme}.")
     print(user_input)
 
+    print(f"Selected author: {selected_author}.")
+    print(f"Selected theme: {selected_theme}.")
 
     # Allow AI to either modify passage or checks its grammar
     response = generate_response(selected_author, selected_theme, user_input)
@@ -63,23 +73,48 @@ def update_dropdown():
     text_box.delete("1.0", "end")
     text_box.insert("1.0", response.strip())
 
+
 # save the current passage
 def save_input():
     global saved_input
     saved_input = text_box.get("1.0", "end").strip()
 
 # save current pasage to file
-def save_to_page():
+def save_page():
+    # save current passage to a file as 1 paragraph.
     global user_input
-    word_count = 0
-    paragraph_count = 1
-    page_count = 1
+    if user_input == 'No passage was previously saved':
+        user_input = ''
+    raw_input = text_box.get("1.0", "end")
+    user_input = raw_input.strip()
 
-    file = open(os.path.joint("/output", "page_"+page_count, "x")) 
+    global paragraph_num
+    global page_num
+    global file_name
 
+    # create an output directory of 
+    global output_diectory
+    if not os.path.exists(output_diectory):
+        os.makedirs(output_diectory)
+    
 
-    with open (os.path.joint("/output", "page_"+1, "w")) as file:
-        file.write(user_input)
+    # each page should only contains 5 paragraph before a new page is created.
+    if paragraph_num <= 5:
+        file_name = "page (" + str(page_num) + ")"
+        file_path = os.path.join(output_diectory, file_name)
+        with open(file_path, "a") as file:
+            file.write("Paragraph (" + str(paragraph_num) + ")" + "\n" + user_input + "\n\n")
+            paragraph_num += 1
+    # new page will be created when 5 paragraph limit is reach.
+    else:
+        paragraph_num = 1
+        page_num += 1
+        file_name = "page (" + str(page_num) + ")"
+        file_path = os.path.join(output_diectory, file_name)
+        with open(file_path, "a") as file:
+            file.write("Paragraph (" + str(paragraph_num) + ")" + "\n" + user_input + "\n\n")
+            paragraph_num += 1
+        
 
 # load saved passage
 def load_input():
@@ -95,30 +130,44 @@ window = tk.Tk()
 window.title("Story Squire")
 window.geometry("900x800")
 
+# frame for description
+frame1 = tk.Frame(window)
+frame1.pack()
+
+# describe dropdown menu for author
+author_label = tk.Label(frame1, text="Select Author Style")
+author_label.pack(side="left", padx=10)
+
+# describe dropdown menu for theme
+theme_label = tk.Label(frame1, text="Select a theme")
+theme_label.pack(side="left", padx=10)
+
+# frame dropdown menu is in
+frame2 = tk.Frame(window)
+frame2.pack(pady=20)
+
 # Create drop down menu for authors
 author_options = ["None", "Edgar Allan Poe", "Hidetaka Miyazaki", "Stephen King", "H.P. Lovecraft", "George R. R. Martin", "J. R. R. Tolkien"]
 author_var = tk.StringVar()
 author_var.set("None")
-author_dropdown = tk.OptionMenu(window, author_var, *author_options)
-author_label = tk.Label(window, text="Select Author Style")
-author_dropdown.pack()
-author_label.pack()
+author_dropdown = tk.OptionMenu(frame2, author_var, *author_options)
+author_dropdown.pack(side="left", padx=20)
 
 # create drop down menu for themes
 theme_options = ["None", "High Fantasy", "Science Fiction", "Cthulhu Mythos", "Dark Fantasy", "Romance", "Bleak", "Coming of age", "Dreams and reality", "The Supernatural", "Comedy"]
 theme_var = tk.StringVar()
 theme_var.set("None")
-theme_dropdown = tk.OptionMenu(window, theme_var, *theme_options)
-theme_label = tk.Label(window, text="Select a theme")
-theme_dropdown.pack()
-theme_label.pack()
+theme_dropdown = tk.OptionMenu(frame2, theme_var, *theme_options)
+theme_dropdown.pack(side="left", padx=20)
+
+# frame user input is in
+frame3 = tk.Frame(window)
+frame3.pack(pady=20)
 
 # Create text box where user write their story
-text_box = tk.Text(window, width=80, height=20, font="Time 12")
-text_box.pack()
+text_box = tk.Text(frame3, width=80, height=20, font="Time 12")
+text_box.pack(side="left")
 
-frame = tk.Frame(window)
-frame.pack(pady=10)
 
 
 # Create save button
@@ -130,8 +179,12 @@ load_button = tk.Button(window, text="Load", command=load_input)
 load_button.pack()
 
 # Create an update button
-update_button = tk.Button(window, text="Generate", command=update_dropdown)
+update_button = tk.Button(window, text="Generate", command=generate_passage)
 update_button.pack()
+
+# create load button
+save_to_page = tk.Button(window, text="Save to page", command=save_page)
+save_to_page.pack(side="left")
 
 # Create a label to display the selected option
 label = tk.Label(window, text="")
