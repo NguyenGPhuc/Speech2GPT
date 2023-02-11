@@ -1,12 +1,13 @@
 *** Description ***
-Writer assistant tool that type out what user(s) said with voice recognition libary. If option enabled, it can read back back what was written to text using text to speech libary.
-This program will automatically checks for grammars and can also re-write passages to match user preference. Text will be recorded in a structured hierarchy of page, paragraph, and words.
-With OpenAI GPT-3 engine, user can also ask an AI to generate a story base on user-specific criterias. It's comprehensive enough to be use as a base for more complex story.
+Writer assistant tool that uses AI technology to help story tellers contextualize their ideas onto paper by simply jot down anything that come to mind.
+Uses OpenAI to generate random stories or mold current passge to certain theme or author style. This program also categories user passage for
+easy lookup and modification. 
+
+(WIP) Implement passage to picture using image generation AI. 
 
 *** Purpose ***
-Help story tellers contextualize their ideas onto paper by simply tell it. With the help of Artificial Intelligence, the same passages can be crafted into a theme or style.
 Coming as a visual medium and graphic novel maker, I realized that I was terrible at painting a detail world using only words. I have always used pictures and video to show
-characters and environment within my narative. So personal, the reason why I created this tool was to help me transition into a more adequate writer, with practice and exmaples.
+characters and environment within my narative. So personal, the reason why I made this tool was to help me transform my thoughts into story.
 
 
 *** Requirements ***
@@ -23,3 +24,4 @@ Sign up here -> https://beta.openai.com/signup
 
 
 *** Instruction ***
+(WIP)
