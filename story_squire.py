@@ -6,6 +6,7 @@ from writing_log import *
 from command_option import *
 from tkinter import Label
 from tkinter.filedialog import askopenfilename
+from tkinter import messagebox
 from PIL import Image, ImageTk
 
 chosen_theme = ''
@@ -19,6 +20,10 @@ book_num = 1
 # keep track of current passage and saved passage
 user_input = ''
 saved_input = ''
+
+# keep track of load page and load paragraph
+lookup_page = 1
+lookup_para = 1
 
 # create output directory
 output_diectory = "output"
@@ -80,6 +85,15 @@ def save_input():
     global saved_input
     saved_input = text_box.get("1.0", "end").strip()
 
+# load saved passage
+def load_input():
+    global saved_input
+    if saved_input == '':
+        saved_input = "No passage was previously saved"
+
+    text_box.delete("1.0", "end")
+    text_box.insert("1.0", saved_input)
+
 # save current pasage to file
 def save_page():
     # save current passage to a file as 1 paragraph.
@@ -116,42 +130,108 @@ def save_page():
         with open(file_path, "a") as file:
             file.write("Paragraph (" + str(paragraph_num) + ")" + "\n" + user_input + "\n\n")
             paragraph_num += 1
-        
+    
 
-# load saved passage
-def load_input():
-    global saved_input
-    if saved_input == '':
-        saved_input = "No passage was previously saved"
+# load specific page and paragraph button
+def load_page(lookup_page_entry, lookup_para_entry):
+    
+    global lookup_page, lookup_para
 
-    text_box.delete("1.0", "end")
-    text_box.insert("1.0", saved_input)
+    # get and validate user input for page and paragraph
+    try: 
+        lookup_page = int(lookup_page_entry.get())
+        lookup_para = lookup_para_entry.get()
 
-# load passage with user given paragraph and page number
-def load_page():
+        print("Page: " + str(lookup_page))
+        print("Paragraph: " + str(lookup_para))
+
+    except ValueError:
+        lookup_page_entry.delete(0, 'end')
+        lookup_para_entry.delete(0, 'end')
+
+
     global paragraph_num
     global page_num
     global file_name
+    global user_input
 
-    load_window = tk.Toplevel(window)
-    load_window.title("Load Window")
+    # open the page that user inputed
+    file_name = "page (" + str(lookup_page) + ")"
+    try:
+        print("Open " + file_name)
+        file_path = os.path.join(output_diectory, file_name)
+        os.path.isfile(file_path)
+    except ValueError:
+        messagebox.showerror("Error", "File by that number doesn't exist.")
+        # reset_input(lookup_page, lookup_para)
+        
+    
+    # open the user selected paragraph (if paragraph number added)
+    with open(file_path, "r") as file:
+        full_text = file.read()
+        # if user don't specify a paragraph number, whole page will be load
 
-    label1 = tk.Label(load_window, text="Enter page number:")
-    label1.grid(row=0, column=0)
-    entry1 = tk.Entry(load_window)
-    entry1.grid(row=0, column=1)
+        # if user don't specify a paragraph number, whole page will be load
+        if lookup_para == '':
+            user_input = full_text
+            text_box.delete("1.0", "end")
+            text_box.insert("1.0", user_input)
+        
 
-    label2 = tk.Label(load_window, text="Enter paragraph number:")
-    label2.grid(row=1, column=0)
-    entry2 = tk.Entry(load_window)
-    entry2.grid(row=1, column=1)
+        # if user specify a paragraoh number, load it if it's valid
+        else:
+            try:
+                
+                split_text = full_text
 
-    # create an output directory of 
+                # parse from paragraph number to the next paragraph number if it exist
+                paragraph = "Paragraph (" + str(lookup_para) + ")"
+                start_index = split_text.find(paragraph)
+                if start_index == -1:
+                    raise ValueError
+                end_index = split_text.find("\n\n", start_index)
+                if end_index == -1:
+                    end_index = len(split_text)
+            
+                user_input = split_text[start_index:end_index]
+
+                # load selected paragraph back to the text box
+                text_box.delete("1.0", "end")
+                text_box.insert("1.0", user_input)
+            except ValueError:
+                messagebox.showerror("Error", "Invalid paragraph number.")
+
+
+# load passage with user given paragraph and page number
+def load_page_input():
+
+    # checks with output folder is even created
     global output_diectory
     if not os.path.exists(output_diectory):
         print("No saved files")
 
+    # load a seperate winow for page and paragraph lookup
+    load_window = tk.Toplevel(window)
+    load_window.title("Load Window")
 
+    # input box for page number entry
+    lookup_page_label = tk.Label(load_window, text="Enter page number:")
+    lookup_page_label.grid(row=0, column=0)
+    lookup_page_entry = tk.Entry(load_window)
+    lookup_page_entry.grid(row=0, column=1)
+
+
+    # input box for paragraph number entry
+    lookup_para_label = tk.Label(load_window, text="Enter paragraph number:")
+    lookup_para_label.grid(row=1, column=0)
+    lookup_para_entry = tk.Entry(load_window)
+    lookup_para_entry.grid(row=1, column=1)
+  
+
+    # create load button that will load user inputed page and paragraph
+    load_button = tk.Button(load_window, text="Load", command=lambda: load_page(lookup_page_entry, lookup_para_entry))
+    load_button.grid(row=0, column=2, rowspan=2)
+                
 # window setting
 window = tk.Tk()
 window.title("Story Squire")
@@ -215,7 +295,7 @@ save_to_page = tk.Button(frame5, text="Save to page", command=save_page)
 save_to_page.pack(side="left")
 
 # create a load from file button
-load_from_page = tk.Button(frame5, text="Load from page", command=load_page)
+load_from_page = tk.Button(frame5, text="Load from page", command=load_page_input)
 load_from_page.pack(side="left")
 
 # Create an update button
