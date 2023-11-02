@@ -6,8 +6,8 @@ easy lookup and modification.
 (WIP) Implement passage to picture using image generation AI. 
 
 *** Purpose ***
-Coming as a visual medium and graphic novel maker, I realized that I was terrible at painting a detail world using only words. I have always used pictures and video to show
-characters and environment within my narative. So personal, the reason why I made this tool was to help me transform my thoughts into story.
+My stepfather grew up with Dyslexia. He wish to writes about his life with it, but lacks the reading the typing efficiency to do so. I wrtoe this small personal program in order
+for him to tell his stories. Though the idea was originallly to help my dad, I want it to be a generalized writting tool for all type of stories with AI assistant services.
 
 
 *** Requirements ***
